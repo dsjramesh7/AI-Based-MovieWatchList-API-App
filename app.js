@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const PORT = 3000;
 
+app.use(express.json()); // allows to use json easily
+
 const movies = [
   {
     title: "One Piece",
@@ -33,6 +35,23 @@ app.get("/moviesWithStatueCode", (req, res) => {
     success: true,
     data: movies,
     totalLengthOfMovies: movies.length,
+  });
+});
+
+// trying POST Method here
+app.post("/movies", (req, res) => {
+  const data = req.body;
+  if (!data.title || !data.year) {
+    return res.status(400).json({
+      error: true,
+      message: "Title and Year is required",
+    });
+  }
+
+  movies.push(data);
+  res.status(201).json({
+    success: true,
+    message: `${data.title} movie is added successfully`,
   });
 });
 
