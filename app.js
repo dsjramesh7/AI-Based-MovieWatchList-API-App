@@ -4,18 +4,33 @@ const PORT = 3000;
 
 const movies = [
   {
+    id: 1,
     title: "One Piece",
     year: 2000,
   },
   {
+    id: 2,
     title: "AOT",
     year: 2014,
   },
 ];
 
+const users = [
+  {
+    id: 1,
+    name: "Ace",
+    email: "ace@gmail.com",
+  },
+  {
+    id: 2,
+    name: "Rajesh",
+    email: "rajesh@gmail.com",
+  },
+];
+
 app.use(express.json()); // allows to use json easily
-app.use(express.text());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.text()); //server handling text
+app.use(express.urlencoded({ extended: true })); // data of url encoded thing
 
 app.use((req, res, next) => {
   console.log("logger....");
@@ -33,7 +48,7 @@ app.use((req, res, next) => {
       message: "The route is blocked by a middleware",
     });
   }
-  // next();
+  next();
 });
 
 app.use((req, res, next) => {
@@ -86,6 +101,71 @@ app.get("/blocked", (req, res) => {
   res.json({
     success: true,
     message: "You will never see this",
+  });
+});
+
+// route paramter/request paramter with one ID
+app.get("/movies/:id", (req, res) => {
+  console.log("Route Parameter: ", req.params);
+  const id = parseInt(req.params.id);
+  const movie = movies.find((movie) => movie.id === id);
+  if (!movie) {
+    return res.status(404).json({
+      error: true,
+      message: `Movie with id: ${id} is not found`,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: movie,
+    message: `Movie Fetched Successfully`,
+  });
+});
+
+// route parameter/request parameter with many Id
+app.get("/users/:userId/movies/:movieId", (req, res) => {
+  console.log("Route Parameters: ", req.params);
+  const userId = parseInt(req.params.userId);
+  const movieId = parseInt(req.params.movieId);
+  const user = users.find((user) => user.id === userId);
+  const movie = movies.find((movie) => movie.id === movieId);
+  if (!user || !movie) {
+    return res.status(404).json({
+      error: true,
+      message: `Movie or user is not found`,
+    });
+  }
+  res.status(200).json({
+    success: true,
+    data: {
+      user: user,
+      movie: movie,
+    },
+    message: `Movie Fetched Successfully`,
+  });
+});
+
+// query string
+app.get("/get-movies", (req, res) => {
+  const query = req.query;
+  console.log("Query String: ", query);
+  const title = query.title;
+
+  const movie = movies.find(
+    (movie) => movie.title.toLowerCase() === title.toLowerCase(),
+  );
+  if (!movie) {
+    return res.status(404).json({
+      error: true,
+      message: `Movie not found`,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: movie,
+    message: `Movie Fetched Successfully`,
   });
 });
 
