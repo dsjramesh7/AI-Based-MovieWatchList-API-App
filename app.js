@@ -2,8 +2,6 @@ const express = require("express");
 const app = express();
 const PORT = 3000;
 
-app.use(express.json()); // allows to use json easily
-
 const movies = [
   {
     title: "One Piece",
@@ -14,6 +12,35 @@ const movies = [
     year: 2014,
   },
 ];
+
+app.use(express.json()); // allows to use json easily
+app.use(express.text());
+app.use(express.urlencoded({ extended: true }));
+
+app.use((req, res, next) => {
+  console.log("logger....");
+  console.log("reques method", req.method);
+  console.log("reques URL", req.url);
+  next();
+});
+
+//block middleware why because we want to stop the execution so we are not using next() here in the if scope
+app.use((req, res, next) => {
+  if (req.url === "/blocked") {
+    console.log("Request is blocked");
+    res.status(403).json({
+      success: false,
+      message: "The route is blocked by a middleware",
+    });
+  }
+  // next();
+});
+
+app.use((req, res, next) => {
+  console.log("Adding custom Header");
+  res.setHeader("X-PoweredBy", "Express");
+  next();
+});
 
 //plain text
 app.get("/", (req, res) => {
@@ -52,6 +79,13 @@ app.post("/movies", (req, res) => {
   res.status(201).json({
     success: true,
     message: `${data.title} movie is added successfully`,
+  });
+});
+
+app.get("/blocked", (req, res) => {
+  res.json({
+    success: true,
+    message: "You will never see this",
   });
 });
 
