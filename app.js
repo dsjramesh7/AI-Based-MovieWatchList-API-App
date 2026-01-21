@@ -1,84 +1,28 @@
 const express = require("express");
+const { movies, users } = require("./data/data");
+const movieRouter = require("./routes/movie");
+const {
+  logger,
+  blocker,
+  customHeader,
+} = require("./middlewares/customMiddlewares");
 const app = express();
 const PORT = 3000;
-
-const movies = [
-  {
-    id: 1,
-    title: "One Piece",
-    year: 2000,
-  },
-  {
-    id: 2,
-    title: "AOT",
-    year: 2014,
-  },
-];
-
-const users = [
-  {
-    id: 1,
-    name: "Ace",
-    email: "ace@gmail.com",
-  },
-  {
-    id: 2,
-    name: "Rajesh",
-    email: "rajesh@gmail.com",
-  },
-];
 
 app.use(express.json()); // allows to use json easily
 app.use(express.text()); //server handling text
 app.use(express.urlencoded({ extended: true })); // data of url encoded thing
 
-app.use((req, res, next) => {
-  console.log("logger....");
-  console.log("reques method", req.method);
-  console.log("reques URL", req.url);
-  next();
-});
+app.use(logger);
+app.use(blocker);
+app.use(customHeader);
 
-//block middleware why because we want to stop the execution so we are not using next() here in the if scope
-app.use((req, res, next) => {
-  if (req.url === "/blocked") {
-    console.log("Request is blocked");
-    res.status(403).json({
-      success: false,
-      message: "The route is blocked by a middleware",
-    });
-  }
-  next();
-});
-
-app.use((req, res, next) => {
-  console.log("Adding custom Header");
-  res.setHeader("X-PoweredBy", "Express");
-  next();
-});
+app.use(movieRouter);
 
 //plain text
-app.get("/", (req, res) => {
-  res.send("Hello World from the other side");
-});
-
-//JSON Response
-app.get("/movies", (req, res) => {
-  res.json({
-    success: true,
-    data: movies,
-    totalLengthOfMovies: movies.length,
-  });
-});
-
-//Json response with status code
-app.get("/moviesWithStatueCode", (req, res) => {
-  res.status(201).json({
-    success: true,
-    data: movies,
-    totalLengthOfMovies: movies.length,
-  });
-});
+// app.get("/", (req, res) => {
+//   res.send("Hello World from the other side");
+// });
 
 // trying POST Method here
 app.post("/movies", (req, res) => {
@@ -220,7 +164,7 @@ app.delete("/delete-movie", (req, res) => {
   res.status(200).json({
     success: true,
     message: "Movie Deleted Successfully",
-    data: updateMovies,
+    movies: updateMovies,
   });
 });
 
