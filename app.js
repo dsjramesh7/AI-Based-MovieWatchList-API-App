@@ -169,6 +169,32 @@ app.get("/get-movies", (req, res) => {
   });
 });
 
+// patch method
+app.patch("/update-movie/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const movie = movies.find((movie) => movie?.id === id);
+  const data = req.body;
+  if (!data?.title) {
+    res.status(400).json({
+      error: true,
+      message: "Movie Title is required",
+    });
+  }
+  console.log("Data: ", data);
+  if (!movie) {
+    res.status(404).json({
+      error: true,
+      message: "Movie Not Found",
+    });
+  }
+  movie.title = data.title;
+  res.status(200).json({
+    success: true,
+    message: "Title Updated Successfully",
+    data: movie,
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`The express server is running on ${PORT}`);
 });
