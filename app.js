@@ -195,6 +195,35 @@ app.patch("/update-movie/:id", (req, res) => {
   });
 });
 
+//delete method
+app.delete("/delete-movie", (req, res) => {
+  const data = req.body;
+  const { title } = data;
+  if (!title) {
+    res.status(400).json({
+      error: true,
+      message: "Title is does not exist",
+    });
+  }
+  const movie = movies.find(
+    (movie) => movie?.title.toLowerCase() === title.toLowerCase(),
+  );
+  if (!movie) {
+    res.status(404).json({
+      error: true,
+      message: "Movie Not Found",
+    });
+  }
+  const updateMovies = movies.filter(
+    (movie) => movie?.title.toLowerCase() !== title.toLowerCase(),
+  );
+  res.status(200).json({
+    success: true,
+    message: "Movie Deleted Successfully",
+    data: updateMovies,
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`The express server is running on ${PORT}`);
 });
