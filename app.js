@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const movieRouter = require("./routes/movie");
 const {
@@ -6,6 +7,7 @@ const {
   customHeader,
 } = require("./middlewares/customMiddlewares");
 const app = express();
+const connectDB = require("./database/database");
 const PORT = 3000;
 
 app.use(express.json()); // allows to use json easily
@@ -23,6 +25,14 @@ app.use(movieRouter);
 //   res.send("Hello World from the other side");
 // });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  try {
+    console.log("the database connection started...");
+    await connectDB(process.env.MONGODB_URI);
+    console.log("the mongodb database is connected");
+  } catch (error) {
+    console.log("An error occured..");
+    console.log("Error => ", error?.message);
+  }
   console.log(`The express server is running on ${PORT}`);
 });
