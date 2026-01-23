@@ -1,5 +1,6 @@
+// test implementation
+/*
 const { movies } = require("../data/data");
-
 //JSON Response
 // const getAllMovies = (req, res) => {
 //   res.json({
@@ -174,3 +175,34 @@ module.exports = {
   updateCertainThingMovie,
   deleteMovie,
 };
+*/
+
+//Real Implementation
+const MovieModel = require("../model/movie.model.js");
+
+// creating movies to add to database
+const createMovie = async (req, res) => {
+  try {
+    const data = req.body;
+    console.log("DataOfMovie: ", data);
+    if (!data.title || !data.year) {
+      return res.status(400).json({
+        error: true,
+        message: "Title and Year both are required!!!",
+      });
+    }
+    const newMovie = await MovieModel.create(data);
+    res.status(201).json({
+      success: true,
+      message: "Movie created successfully",
+      data: newMovie,
+    });
+  } catch (error) {
+    console.log("Error: ", error?.message);
+    res.status(500).json({
+      message: error?.message,
+    });
+  }
+};
+
+module.exports = createMovie;
