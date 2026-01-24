@@ -179,30 +179,75 @@ module.exports = {
 
 //Real Implementation
 const MovieModel = require("../model/movie.model.js");
+const { StatusCodes } = require("http-status-codes");
 
-// creating movies to add to database
 const createMovie = async (req, res) => {
   try {
     const data = req.body;
     console.log("DataOfMovie: ", data);
     if (!data.title || !data.year) {
-      return res.status(400).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({
         error: true,
         message: "Title and Year both are required!!!",
       });
     }
     const newMovie = await MovieModel.create(data);
-    res.status(201).json({
+    res.status(StatusCodes.CREATED).json({
       success: true,
       message: "Movie created successfully",
       data: newMovie,
     });
   } catch (error) {
     console.log("Error: ", error?.message);
-    res.status(500).json({
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       message: error?.message,
     });
   }
 };
 
-module.exports = createMovie;
+const getMovieByID = async (req, res) => {
+  const id = req.params.id;
+  console.log("movieId", id);
+  try {
+    const movie = await MovieModel.findById(id);
+    if (!movie) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        error: true,
+        message: `Movie with this ${id} is not found`,
+      });
+    }
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Movie Found Successfully",
+      data: movie,
+    });
+  } catch (error) {
+    console.log("Error: ", error?.message);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error?.message,
+    });
+  }
+};
+
+const getAllMovies = async (req, res) => {
+  try {
+    const allMovies = await MovieModel.find();
+    if (allMovies.length === 0) {
+      res.status(StatusCodes.NOT_FOUND).json({
+        message: "No Movies has been created yet",
+      });
+    }
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "All Movies Found Successfully",
+      allMovies: allMovies,
+    });
+  } catch (error) {
+    console.log("allMoviesError: ", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error.message,
+    });
+  }
+};
+
+module.exports = { createMovie, getMovieByID, getAllMovies };

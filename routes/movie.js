@@ -22,8 +22,14 @@ const router = express.Router();
 // router.delete("/delete-movie", deleteMovie);
 
 // real implementation
-const createMovie = require("../controllers/movie.controller");
+const {
+  createMovie,
+  getMovieByID,
+  getAllMovies,
+} = require("../controllers/movie.controller");
 
 router.post("/create-movie", createMovie);
+router.get("/movies/:id", getMovieByID);
+router.get("/get-all-movies", getAllMovies);
 
 module.exports = router;
