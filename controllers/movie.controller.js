@@ -267,11 +267,49 @@ const deleteMovie = async (req, res) => {
       data: movie,
     });
   } catch (error) {
-    console.log("allMoviesError: ", error);
+    console.log("deleteMovieIssue: ", error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       message: error.message,
     });
   }
 };
 
-module.exports = { createMovie, getMovieByID, getAllMovies, deleteMovie };
+const updateMovie = async (req, res) => {
+  const id = req.params.id;
+  const movieUpdatedata = req.body;
+  if (!movieUpdatedata) {
+    res.status(StatusCodes.BAD_REQUEST).json({
+      message: "Data is required",
+    });
+  }
+  try {
+    const movie = await MovieModel.findById(id);
+    if (!movie) {
+      res.status(StatusCodes.NOT_FOUND).json({
+        error: true,
+        message: `Movie with this ${id} id doesn't exist`,
+      });
+    }
+    movie.title = movieUpdatedata.title;
+    await movie.save();
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Movie Updated Successfully",
+      data: movieUpdatedata,
+    });
+  } catch (error) {
+    console.log("updateIssue: ", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error.message,
+    });
+  }
+};
+
+module.exports = {
+  createMovie,
+  getMovieByID,
+  getAllMovies,
+  deleteMovie,
+  updateMovie,
+};
