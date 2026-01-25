@@ -250,4 +250,28 @@ const getAllMovies = async (req, res) => {
   }
 };
 
-module.exports = { createMovie, getMovieByID, getAllMovies };
+const deleteMovie = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const movie = await MovieModel.findByIdAndDelete(id);
+    if (!movie) {
+      res.status(StatusCodes.NOT_FOUND).json({
+        error: true,
+        message: `Movie with this ${id} id doesn't exist`,
+      });
+    }
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Movie Deleted Successfully",
+      data: movie,
+    });
+  } catch (error) {
+    console.log("allMoviesError: ", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error.message,
+    });
+  }
+};
+
+module.exports = { createMovie, getMovieByID, getAllMovies, deleteMovie };

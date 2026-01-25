@@ -26,10 +26,12 @@ const {
   createMovie,
   getMovieByID,
   getAllMovies,
+  deleteMovie,
 } = require("../controllers/movie.controller");
 
 router.post("/create-movie", createMovie);
 router.get("/movies/:id", getMovieByID);
 router.get("/get-all-movies", getAllMovies);
+router.delete("/delete-movie/:id", deleteMovie);
 
 module.exports = router;
