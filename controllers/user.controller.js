@@ -32,4 +32,37 @@ const registerUser = async (req, res) => {
   }
 };
 
+const loginUser = async (req, res) => {
+  try {
+    const data = req.body;
+    if (!data.email || !data.password) {
+      res.status(StatusCodes.BAD_REQUEST).json({
+        message: "Email and Password is required",
+      });
+    }
+    const user = await UserSchema.findOne({ email: data.email });
+    if (!user) {
+      res.status(StatusCodes.BAD_REQUEST).json({
+        message: "User Not Found!!",
+      });
+    }
+    const comparePassword = await bcrypt.compare(data.password, user.password);
+    if (!comparePassword) {
+      res.status(StatusCodes.BAD_REQUEST).json({
+        message: "Incorrect Password",
+      });
+    }
+
+    res.status(StatusCodes.OK).json({
+      message: "Login is Successful",
+      user: user,
+    });
+  } catch (error) {
+    console.log("loginIssue: ", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = { registerUser };
