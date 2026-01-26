@@ -8,6 +8,7 @@ const {
 } = require("./middlewares/customMiddlewares");
 const app = express();
 const connectDB = require("./database/database");
+const notFound = require("./middlewares/notFound");
 const PORT = 3000;
 
 app.use(express.json()); // allows to use json easily
@@ -19,6 +20,8 @@ app.use(blocker);
 app.use(customHeader);
 
 app.use(movieRouter);
+
+app.use(notFound); // top to bottom approach that's why we put it at last
 
 //plain text
 // app.get("/", (req, res) => {
