@@ -1,4 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
+const bcrypt = require("bcrypt");
 const UserSchema = require("../model/UserSchema");
 
 //Register User
@@ -11,7 +12,14 @@ const registerUser = async (req, res) => {
         message: "Email and Name and Password is required For Registration",
       });
     }
-    const newUser = await UserSchema.create(data);
+    const hashedPassword = await bcrypt.hash(
+      data.password,
+      Number(process.env.SALT_ROUNDS),
+    );
+    const newUser = await UserSchema.create({
+      ...data,
+      password: hashedPassword,
+    });
     res.status(StatusCodes.CREATED).json({
       message: "User created Successfully",
       payloadData: newUser,
