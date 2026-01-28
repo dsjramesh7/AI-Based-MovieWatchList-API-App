@@ -52,10 +52,12 @@ const loginUser = async (req, res) => {
         message: "Incorrect Password",
       });
     }
+    const userToJSObject = user.toObject();
+    const { password: hashedPassword, ...remainingData } = userToJSObject;
 
     res.status(StatusCodes.OK).json({
       message: "Login is Successful",
-      user: user,
+      user: remainingData,
     });
   } catch (error) {
     console.log("loginIssue: ", error);
@@ -65,4 +67,4 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser };
+module.exports = { registerUser, loginUser };
