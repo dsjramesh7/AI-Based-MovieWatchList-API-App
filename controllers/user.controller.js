@@ -124,7 +124,37 @@ const getUserProfile = async (req, res) => {
     });
   } catch (error) {
     console.log("getUser Error: ", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error.message,
+    });
   }
 };
 
-module.exports = { registerUser, loginUser, updateUser, getUserProfile };
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const user = await UserSchema.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "User with this Id doesn't exist to delete",
+      });
+    }
+    res.status(StatusCodes.OK).json({
+      message: "User deleted Successfully",
+      user: user,
+    });
+  } catch (error) {
+    console.log("deleteUser Error: ", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error.message,
+    });
+  }
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  updateUser,
+  getUserProfile,
+  deleteUser,
+};

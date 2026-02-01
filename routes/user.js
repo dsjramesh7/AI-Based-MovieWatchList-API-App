@@ -5,6 +5,7 @@ const {
   loginUser,
   updateUser,
   getUserProfile,
+  deleteUser,
 } = require("../controllers/user.controller");
 const authorization = require("../middlewares/authorization");
 
@@ -12,5 +13,6 @@ router.post("/register-user", registerUser);
 router.post("/login-user", loginUser);
 router.post("/update-user", authorization, updateUser);
 router.get("/get-user", authorization, getUserProfile);
+router.delete("/delete-user", authorization, deleteUser);
 
 module.exports = router;
