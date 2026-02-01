@@ -28,12 +28,17 @@ const {
   getAllMovies,
   deleteMovie,
   updateMovie,
+  getAllMoviesByUserId,
 } = require("../controllers/movie.controller");
+const authorization = require("../middlewares/authorization");
 
-router.post("/create-movie", createMovie);
 router.get("/movies/:id", getMovieByID);
 router.get("/get-all-movies", getAllMovies);
 router.delete("/delete-movie/:id", deleteMovie);
 router.patch("/update-movie/:id", updateMovie);
 
+// Authorized routes only
+router.use(authorization);
+router.post("/create-movie", createMovie);
+router.get("/get-movies-by-userid", getAllMoviesByUserId);
 module.exports = router;

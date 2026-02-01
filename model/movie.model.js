@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const movieSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: [true, "Movie must belong to a user."],
+  },
   title: {
     type: String,
     required: [true, "Movie Title is Required"],

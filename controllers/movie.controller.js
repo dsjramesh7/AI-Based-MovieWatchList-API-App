@@ -180,10 +180,18 @@ module.exports = {
 //Real Implementation
 const MovieModel = require("../model/movie.model.js");
 const { StatusCodes } = require("http-status-codes");
+const UserSchema = require("../model/UserSchema.js");
 
 const createMovie = async (req, res) => {
+  const { id } = req.user;
+  const data = req.body;
   try {
-    const data = req.body;
+    const user = await UserSchema.findById(id);
+    if (!user) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "User not Found",
+      });
+    }
     console.log("DataOfMovie: ", data);
     if (!data.title || !data.year) {
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -191,7 +199,7 @@ const createMovie = async (req, res) => {
         message: "Title and Year both are required!!!",
       });
     }
-    const newMovie = await MovieModel.create(data);
+    const newMovie = await MovieModel.create({ user: id, ...data });
     res.status(StatusCodes.CREATED).json({
       success: true,
       message: "Movie created successfully",
@@ -199,6 +207,29 @@ const createMovie = async (req, res) => {
     });
   } catch (error) {
     console.log("Error: ", error?.message);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error?.message,
+    });
+  }
+};
+
+const getAllMoviesByUserId = async (req, res) => {
+  const { id } = req.user;
+  try {
+    const movies = await MovieModel.find({ user: id });
+    if (movies.length === 0) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        error: true,
+        message: `No Movies Found`,
+      });
+    }
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Movies Found Successfully",
+      data: movies,
+    });
+  } catch (error) {
+    console.log("getAllMoviesByUserID error: ", error?.message);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       message: error?.message,
     });
@@ -312,4 +343,5 @@ module.exports = {
   getAllMovies,
   deleteMovie,
   updateMovie,
+  getAllMoviesByUserId,
 };
