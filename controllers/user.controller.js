@@ -108,4 +108,23 @@ const updateUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, updateUser };
+const getUserProfile = async (req, res) => {
+  try {
+    console.log("req.userOfGet: ", req.user);
+    const { id } = req.user;
+    const user = await UserSchema.findById(id);
+    if (!user) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "User Not Found",
+      });
+    }
+    res.status(StatusCodes.OK).json({
+      message: "User Profile is fetched Successfully",
+      user: user,
+    });
+  } catch (error) {
+    console.log("getUser Error: ", error);
+  }
+};
+
+module.exports = { registerUser, loginUser, updateUser, getUserProfile };
