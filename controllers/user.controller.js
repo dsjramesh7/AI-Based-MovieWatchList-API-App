@@ -54,9 +54,13 @@ const loginUser = async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ email: data.email }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRES_IN,
-    });
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      },
+    );
     console.log("token", token);
 
     const userToJSObject = user.toObject();
@@ -75,6 +79,33 @@ const loginUser = async (req, res) => {
   }
 };
 
-const updateUser = async (req, res) => {};
+const updateUser = async (req, res) => {
+  try {
+    console.log("updateUserDetails", req.user);
+    const { id } = req.user;
+    const data = req.body;
+    console.log("updateData: ", data);
+    if (!data) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "Please provide data",
+      });
+    }
+    const user = await UserSchema.findByIdAndUpdate(id, data, { new: true });
+    if (!user) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "User Not Found",
+      });
+    }
+    res.status(StatusCodes.OK).json({
+      message: "User Profile is updated Successfully",
+      user: user,
+    });
+  } catch (error) {
+    console.log("ErrorUpdate: ", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error.message,
+    });
+  }
+};
 
 module.exports = { registerUser, loginUser, updateUser };

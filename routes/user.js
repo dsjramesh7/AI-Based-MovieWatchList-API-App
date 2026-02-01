@@ -5,9 +5,10 @@ const {
   loginUser,
   updateUser,
 } = require("../controllers/user.controller");
+const authorization = require("../middlewares/authorization");
 
 router.post("/register-user", registerUser);
 router.post("/login-user", loginUser);
-router.patch("/update-user", updateUser);
+router.post("/update-user", authorization, updateUser);
 
 module.exports = router;
