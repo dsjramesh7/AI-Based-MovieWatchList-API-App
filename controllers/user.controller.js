@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const bcrypt = require("bcrypt");
 const UserSchema = require("../model/UserSchema");
+const jwt = require("jsonwebtoken");
 
 //Register User
 const registerUser = async (req, res) => {
@@ -52,12 +53,19 @@ const loginUser = async (req, res) => {
         message: "Incorrect Password",
       });
     }
+
+    const token = jwt.sign({ email: data.email }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+    console.log("token", token);
+
     const userToJSObject = user.toObject();
     const { password: hashedPassword, ...remainingData } = userToJSObject;
 
     res.status(StatusCodes.OK).json({
       message: "Login is Successful",
       user: remainingData,
+      token: token,
     });
   } catch (error) {
     console.log("loginIssue: ", error);
