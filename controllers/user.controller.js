@@ -112,7 +112,7 @@ const getUserProfile = async (req, res) => {
   try {
     console.log("req.userOfGet: ", req.user);
     const { id } = req.user;
-    const user = await UserSchema.findById(id);
+    const user = await UserSchema.findById(id).select("-password");
     if (!user) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: "User Not Found",
