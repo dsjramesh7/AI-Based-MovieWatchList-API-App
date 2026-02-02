@@ -15,10 +15,18 @@ const movieSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Movie Year is Required"],
   },
+  movieStatus: {
+    type: String,
+    enum: {
+      values: ["pending", "ongoing", "completed"],
+      message: "{VALUE} is not a valid Movie Status",
+    },
+    default: "pending",
+  },
   genre: {
     type: String,
     enum: {
-      values: ["Action", "Comedy", "Horror", "Sci-Fi", "Other"],
+      values: ["Action", "Comedy", "Horror", "Sci-Fi", "Romance", "Other"],
       message: "{VALUE} is not a valid genre",
     },
   },

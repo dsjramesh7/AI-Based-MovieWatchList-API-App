@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const movieRouter = require("./routes/movie");
 const userRouter = require("./routes/user");
+const aiRouter = require("./routes/ai");
 const {
   logger,
   blocker,
@@ -22,6 +23,7 @@ app.use(customHeader);
 
 app.use("/user", userRouter);
 app.use("/movie", movieRouter);
+app.use("/ai", aiRouter);
 
 app.use(notFound); // top to bottom approach that's why we put it at last
 
