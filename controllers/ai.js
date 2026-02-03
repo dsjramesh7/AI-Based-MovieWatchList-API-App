@@ -16,6 +16,7 @@ const client = new OpenAI({
 // };
 // testOpenAI();
 
+//comments are important too.
 const movieReccomendationAI = async (req, res) => {
   const { id } = req.user;
   try {
